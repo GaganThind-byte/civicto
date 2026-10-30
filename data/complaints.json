@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "ticketNumber": "C-1024",
+    "title": "Water leakage under sink",
+    "description": "Water is dripping continuously from the pipe under the kitchen sink.",
+    "category": "Plumbing",
+    "status": "ASSIGNED",
+    "urgency": "HIGH",
+    "location": "Tower B / Flat 402",
+    "createdAt": "2026-10-09T00:00:00.000Z",
+    "updatedAt": "2026-10-09T00:00:00.000Z"
+  },
+  {
+    "id": "2",
+    "ticketNumber": "C-1029",
+    "title": "Lift not working",
+    "description": "The lift stopped between floors and residents are stuck.",
+    "category": "Lift-Elevator",
+    "status": "IN_PROGRESS",
+    "urgency": "CRITICAL",
+    "location": "Tower A / Ground Floor",
+    "createdAt": "2026-10-08T12:00:00.000Z",
+    "updatedAt": "2026-10-08T12:00:00.000Z"
+  }
+]

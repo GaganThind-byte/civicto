@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Property {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  latitude  Float?
+  longitude Float?
+  units     Unit[]
+  staff     StaffMapping[]
+  tickets   Ticket[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Unit {
+  id         String   @id @default(uuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+  name       String
+  tickets    Ticket[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String
+  passwordHash   String
+  role           String   @default("RESIDENT")
+  team           String?
+  residentTickets Ticket[] @relation("ResidentTickets")
+  ticketVotes    TicketVote[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Ticket {
+  id             String   @id @default(uuid())
+  ticketNumber   String   @unique
+  title          String   @default("")
+  location       String   @default("")
+  propertyId     String
+  property       Property @relation(fields: [propertyId], references: [id])
+  unitId         String
+  unit           Unit     @relation(fields: [unitId], references: [id])
+  description    String
+  photoBeforeUrl String   @default("")
+  photoAfterUrl  String?
+  latitude       Float?
+  longitude      Float?
+  category       String?
+  urgency        String   @default("MEDIUM")
+  baseUrgency    String?
+  aiConfidence   Float?
+  aiVerificationStatus String?
+  aiVerificationNotes  String?
+  duplicateReports Int     @default(0)
+  dedupGroupId   String?
+  status         String   @default("SUBMITTED")
+  assignedToId   String?
+  residentId     String?
+  resident       User?    @relation("ResidentTickets", fields: [residentId], references: [id], onDelete: SetNull)
+  slaDeadline    DateTime?
+  escalatedAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  events         TicketHistory[]
+  subscribers    TicketSubscriber[]
+  votes          TicketVote[]
+
+  @@index([residentId])
+}
+
+model TicketVote {
+  id        String   @id @default(cuid())
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([ticketId, userId])
+  @@index([ticketId])
+}
+
+model TicketHistory {
+  id          String   @id @default(uuid())
+  ticketId    String
+  ticket      Ticket   @relation(fields: [ticketId], references: [id])
+  fromStatus  String
+  toStatus    String
+  actorId     String
+  notes       String?
+  createdAt  DateTime @default(now())
+}
+
+model TicketSubscriber {
+  id        String   @id @default(uuid())
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+}
+
+model StaffMapping {
+  id         String   @id @default(uuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+  category   String
+  staffEmail String
+  staffPhone String
+}
